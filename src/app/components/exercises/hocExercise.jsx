@@ -1,50 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CollapseWrapper from "../common/collapse";
 import PropTypes from "prop-types";
 import Divider from "../common/divider";
-import withPropsStyles from "../examples/hoc/withPropsStyles";
+import SmallTitle from "../common/typografy/smallTitle";
+import CardWrapper from "../common/Card";
 
-const SimpleComponent = ({ onLogin, onLogout, isAuth }) => {
-    return (
-        <>
-            {isAuth ? (
-                <button className="btn btn-secondary" onClick={onLogout}>
-                    Выйти из системы
-                </button>
-            ) : (
-                <button className="btn btn-secondary" onClick={onLogin}>
-                    Войти
-                </button>
-            )}
-        </>
+// Simple Component
+const SimpleComponent = ({ onLogin, onLogOut, isAuth }) => {
+    return isAuth ? (
+        <button className="btn btn-secondary" onClick={onLogOut}>
+            Выйти из системы
+        </button>
+    ) : (
+        <button className="btn btn-primary" onClick={onLogin}>
+            Войти
+        </button>
     );
 };
 
 SimpleComponent.propTypes = {
-    isAuth: PropTypes.string,
-    onLogin: PropTypes.func.isRequired,
-    onLogout: PropTypes.func.isRequired
+    onLogin: PropTypes.func,
+    onLogOut: PropTypes.func,
+    isAuth: PropTypes.bool
 };
 
+// HOC Component
+const withFunctions = (Component) => (props) => {
+    const handleLogin = () => {
+        localStorage.setItem("auth", "token");
+    };
+    const handleLogout = () => {
+        localStorage.removeItem("auth");
+    };
+    const isAuth = !!localStorage.getItem("auth");
+
+    return (
+        <CardWrapper>
+            <Component
+                isAuth={isAuth}
+                onLogOut={handleLogout}
+                onLogin={handleLogin}
+                {...props}
+            />
+        </CardWrapper>
+    );
+};
+// Component with HOC
+const ComponentWithHoc = withFunctions(SimpleComponent);
+
 const HocExercise = () => {
-    const [isAuth, setIsAuth] = useState("");
-
-    useEffect(() => {
-        setIsAuth(localStorage.getItem("user"));
-    }, []);
-
-    const onLogin = () => {
-        localStorage.setItem("user", "somedata");
-        setIsAuth(localStorage.getItem("user"));
-    };
-
-    const onLogout = () => {
-        localStorage.removeItem("user");
-        setIsAuth("");
-    };
-
-    const SimpleComponentWithPropsStyles = withPropsStyles(SimpleComponent);
-
     return (
         <CollapseWrapper title="Упражнение">
             <p className="mt-3">
@@ -91,9 +95,8 @@ const HocExercise = () => {
                 </li>
             </ul>
             <Divider />
-            <SimpleComponentWithPropsStyles
-                {...{ isAuth, onLogin, onLogout }}
-            />
+            <SmallTitle>Решение</SmallTitle>
+            <ComponentWithHoc />
         </CollapseWrapper>
     );
 };

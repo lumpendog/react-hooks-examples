@@ -20,13 +20,13 @@ module.exports = {
             { anonymous: "always", named: "never" }
         ],
         "multiline-ternary": ["off"],
+        "react/display-name": "off",
         quotes: [
             "error",
             "double",
             {
                 allowTemplateLiterals: true
             }
-        ],
-        "react/display-name": "off"
+        ]
     }
 };
